@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rclone Configuration</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            background-color: #f5f5f5;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background-color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h2 {
+            color: #2c3e50;
+            margin: 0;
+        }
+        .container {
+            margin: 80px 20px 20px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            flex: 1;
+        }
+        h3 {
+            color: #34495e;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+        }
+        .button-group {
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+        .cloud-provider-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 150px;
+            justify-content: center;
+        }
+        button img {
+            filter: brightness(0) invert(1);
+            transition: filter 0.3s;
+        }
+        button:hover img {
+            filter: brightness(0) invert(1);
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        button.close-btn {
+            background-color: #e74c3c;
+        }
+        button.close-btn:hover {
+            background-color: #c0392b;
+        }
+        button.gdrive {
+            background-color: #4285f4;
+        }
+        button.gdrive:hover {
+            background-color: #3367d6;
+        }
+        button.onedrive {
+            background-color: #0078d4;
+        }
+        button.onedrive:hover {
+            background-color: #106ebe;
+        }
+        button.sharepoint {
+            background-color: #036c70;
+        }
+        button.sharepoint:hover {
+            background-color: #025a5e;
+        }
+        button.box {
+            background-color: #0061d5;
+        }
+        button.box:hover {
+            background-color: #004fb3;
+        }
+        button.dropbox {
+            background-color: #0061ff;
+        }
+        button.dropbox:hover {
+            background-color: #004ec2;
+        }
+        #status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .status-container {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        select, input {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            min-width: 200px;
+        }
+        .remote-list {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            position: relative;
+            min-height: 50px;
+        }
+        .remote-list.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 30px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        .remote-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .remote-item:last-child {
+            border-bottom: none;
+        }
+        .remote-item:hover {
+            background-color: #e8f4fc;
+        }
+        .remote-item.selected {
+            background-color: #d1ecf1;
+            border-left: 4px solid #3498db;
+        }
+        .dialog {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        .dialog.show {
+            display: block;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        .overlay.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <h2>Rclone Configuration</h2>
+            <div id="config-status" style="color: #666; font-size: 0.9em;">Ready to configure...</div>
+        </div>
+        <button id="close" class="close-btn">Close Application</button>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="margin: 0;">Existing Remotes</h3>
+                    <div class="action-buttons" style="margin: 0; gap: 10px;">
+                        <button id="test-remote" disabled>Check Remote</button>
+                        <button id="delete-remote" class="close-btn" disabled>Delete Remote</button>
+                    </div>
+                </div>
+                <div id="remote-list" class="remote-list">
+                    Loading remotes...
+                </div>
+                <div id="status" style="margin: 0;"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Add New Remote</h3>
+            <!-- Cloud Provider Buttons -->
+            <div class="cloud-provider-grid">
+                <button id="add-gdrive" class="gdrive">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg" width="20" height="20" alt="">
+                    Google Drive
+                </button>
+                <button id="add-onedrive" class="onedrive">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Microsoft_Office_OneDrive_%282019%E2%80%93present%29.svg" width="20" height="20" alt="">
+                    OneDrive
+                </button>
+                <button id="add-dropbox" class="dropbox">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Dropbox_Icon.svg" width="20" height="20" alt="">
+                    Dropbox
+                </button>
+                <button id="add-box" class="box">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Box_Box_Logo_%282017-present%29.svg" width="20" height="20" alt="">
+                    Box
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    
+    <!-- Rclone Setup Dialog -->
+    <div class="dialog" id="rclone-setup-dialog">
+        <h3>Rclone Setup Required</h3>
+        <div class="dialog-inputs" style="margin: 20px 0;">
+            <div class="input-group">
+                <label for="rclone-path">Rclone Path:</label>
+                <input type="text" id="rclone-path" placeholder="e.g., /usr/local/bin/rclone">
+                <div style="font-size: 0.8em; color: #666; margin-top: 5px;">
+                    Default path on macOS: /usr/local/bin/rclone
+                </div>
+            </div>
+        </div>
+        <div class="button-group">
+            <button id="use-default-path">Use Default Path</button>
+            <button id="confirm-rclone-path">Save Path</button>
+            <button id="cancel-rclone-path">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Remote Dialog -->
+    <div class="dialog" id="remote-dialog">
+        <h3>New Remote Configuration</h3>
+        <div class="dialog-inputs" style="margin: 20px 0;">
+            <div class="input-group">
+                <label for="remote-name">Remote Name:</label>
+                <input type="text" id="remote-name" placeholder="Enter remote name">
+            </div>
+        </div>
+        <div class="button-group">
+            <button id="confirm-remote">Add Remote</button>
+            <button id="cancel-remote">Cancel</button>
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>
