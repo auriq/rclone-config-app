@@ -1,184 +1,67 @@
-# Rclone Config App User Guide
+# Rclone Configuration App - User's Guide
 
-This guide explains how to use the Rclone Config App to manage your cloud storage connections.
+## Main Interface
 
-## Overview
+### Connected Remotes Section
 
-Rclone Config App provides a graphical interface for:
-- Setting up cloud storage connections
-- Managing existing connections
-- Testing connections
-- Viewing storage contents
-- Removing connections
+The main interface shows your configured remotes in the "Connected Remotes" section:
 
-## Getting Started
+1. **Section Header**
+   - Title: "Connected Remotes"
+   - Reload button: Click to refresh the list of remotes
 
-1. Launch the application
-2. The app will automatically detect rclone on your system
-3. If rclone is not found, you'll be prompted to:
-   - Use the default path
-   - Or enter the path to your rclone installation
+2. **Remote List**
+   - Each remote is displayed as a clickable item
+   - Click a remote to select it
+   - Selected remote is highlighted with a blue border
 
-## Adding a New Remote
+3. **Remote Actions**
+   When a remote is selected, two action icons appear:
+   - ✓ Check Remote: Tests the connection and shows recent files
+   - 🗑️ Delete Remote: Removes the remote configuration
 
-1. Click one of the cloud provider buttons:
-   - Google Drive
-   - OneDrive
-   - Dropbox
-   - Box
+### Managing Remotes
 
-2. Enter a name for your remote:
-   - Choose a descriptive name
-   - Use only letters, numbers, and underscores
-   - Example: "personal_gdrive" or "work_onedrive"
-
-3. Follow the authentication process:
-   - A browser window will open automatically
-   - Log in to your cloud service
-   - Grant permission to rclone
-   - Return to the app
-
-4. Wait for confirmation:
-   - The app will verify the connection
-   - You'll see "Remote configured successfully!" when complete
-   - The new remote will appear in the list
-
-## Managing Existing Remotes
-
-### Viewing Remotes
-- All configured remotes are listed in the main window
-- Click on a remote to select it
-- Selected remote's details will be displayed
-
-### Testing a Remote
-1. Select a remote from the list
-2. Click "Check Remote"
+#### Checking a Remote
+1. Click on a remote name to select it
+2. Click the checkmark icon (✓)
 3. The app will:
    - Test the connection
-   - Show storage usage information
-   - Display recent files (up to 100)
+   - Display the total number of files
+   - Show a list of recent files
 
-### Deleting a Remote
-1. Select the remote you want to remove
-2. Click "Delete Remote"
+#### Deleting a Remote
+1. Click on a remote name to select it
+2. Click the trash icon (🗑️)
 3. The remote will be removed from your configuration
-4. The remotes list will update automatically
 
-## Understanding the Interface
+#### Reloading the Remote List
+- Click the "Reload Remotes" button next to the section title
+- Use this after:
+  - Adding a new remote
+  - Deleting a remote
+  - Making changes outside the app
 
-### Main Window
-- Top: Application header with status messages
-- Center: List of configured remotes
-- Bottom: Cloud provider buttons for adding new remotes
+### Adding New Remotes
 
-### Remote List
-- Shows all configured remotes
-- Click a remote to select it
-- Selected remote is highlighted
-- Shows status and file information when checked
+The "Add New Remote" section provides buttons for supported cloud providers:
 
-### Status Messages
-- Appear below the header
-- Show:
-  - Configuration progress
-  - Connection status
-  - Error messages
-  - Success confirmations
+1. Choose a provider:
+   - Google Drive
+   - OneDrive
+   - Box
+   - Dropbox
 
-### Action Buttons
-- Check Remote: Tests the selected connection
-- Delete Remote: Removes the selected remote
-- Cloud Provider Buttons: Add new remotes
+2. Enter configuration:
+   - Provide a name for the remote
+   - Follow the OAuth authentication process
 
-## Common Tasks
+3. After setup:
+   - New remote appears in the list
+   - Ready for immediate use
 
-### Setting Up Google Drive
-1. Click "Google Drive" button
-2. Enter a name for the remote
-3. Log in to your Google account
-4. Grant permissions to rclone
-5. Wait for confirmation
+## Tips
 
-### Setting Up OneDrive
-1. Click "OneDrive" button
-2. Enter a name for the remote
-3. Log in to your Microsoft account
-4. Grant permissions to rclone
-5. Wait for confirmation
-
-### Setting Up Dropbox
-1. Click "Dropbox" button
-2. Enter a name for the remote
-3. Log in to your Dropbox account
-4. Grant permissions to rclone
-5. Wait for confirmation
-
-### Setting Up Box
-1. Click "Box" button
-2. Enter a name for the remote
-3. Log in to your Box account
-4. Grant permissions to rclone
-5. Wait for confirmation
-
-## Troubleshooting
-
-### Authentication Issues
-- Ensure you're connected to the internet
-- Try closing and reopening the app
-- Check if your cloud service is accessible
-- Try deleting and recreating the remote
-
-### Connection Problems
-- Select the remote and click "Check Remote"
-- Verify your internet connection
-- Check if the cloud service is operational
-- Try restarting the application
-
-### Configuration Errors
-- Make sure rclone is properly installed
-- Check the rclone path in settings
-- Verify you have proper permissions
-- Try removing and re-adding the remote
-
-### Browser Authentication
-- The app will open your default browser
-- Allow pop-ups from the application
-- Complete the authentication process
-- Return to the app after granting access
-
-## Best Practices
-
-1. Naming Remotes
-   - Use descriptive names
-   - Include provider type
-   - Add purpose or location
-   - Example: "personal_gdrive_backup"
-
-2. Regular Testing
-   - Test remotes periodically
-   - Check storage usage
-   - Verify file access
-   - Monitor for issues
-
-3. Organization
-   - Keep remote list organized
-   - Delete unused remotes
-   - Document remote purposes
-   - Maintain clear naming conventions
-
-## Closing the Application
-
-1. Click the "Close Application" button
-2. The app will:
-   - Clean up any temporary files
-   - Save configurations
-   - Close properly
-
-## Getting Help
-
-If you encounter issues:
-1. Check the status messages
-2. Verify rclone installation
-3. Test the remote connection
-4. Consult the troubleshooting section
-5. Check rclone documentation for specific providers
+- Always select a remote before using action icons
+- Use "Reload Remotes" if the list seems outdated
+- Check the status messages at the bottom for operation feedback

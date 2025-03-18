@@ -1,26 +1,13 @@
 # Rclone Config App インストールガイド (macOS)
 
-## Rclone Config Appについて
+## ダウンロード
 
-Rclone Config Appは、rcloneの設定を管理するためのグラフィカルユーザーインターフェースです。以下の機能を提供します：
+### 最新リリース (v1.0.0)
 
-- クラウドストレージプロバイダー（Google Drive、OneDrive、Dropbox、Box）の設定
-- 複数のリモート接続の管理
-- リモート接続のテスト
-- リモートストレージの内容表示
-- リモート設定の削除
-
-このアプリは、コマンドラインコマンドを使用する代わりに、ユーザーフレンドリーなインターフェースを提供することで、rcloneのセットアップ過程を簡素化します。
-
-## システム要件
-
-- macOS 10.12以降
-- arm64（Apple Silicon）プロセッサ
-- npmやNode.jsは不要（アプリはビルド済みですぐに使用可能）
+ダウンロードリンク：
+- [Rclone Config App-1.0.0-mac-arm64-installer.dmg](https://asi-opendata.s3.us-east-1.amazonaws.com/rclone-config-app/Rclone+Config+App-1.0.0-mac-arm64-installer.dmg)
 
 ## 前提条件
-
-アプリケーションの使用にはrcloneのみが必要です：
 
 1. Homebrewのインストール（まだインストールされていない場合）:
 ```bash
@@ -31,57 +18,76 @@ Rclone Config Appは、rcloneの設定を管理するためのグラフィカル
 ```bash
 brew install rclone
 ```
-これにより、rcloneがデフォルトの場所（`/usr/local/bin/rclone`）にインストールされます。
 
-## Rclone Config Appのインストール
+## インストール手順
 
-1. `Rclone Config App-1.0.0-mac-arm64-installer.dmg`を開く
-2. DMGウィンドウが開いたら、Rclone Config Appをアプリケーションフォルダにドラッグ
-3. DMGウィンドウを閉じる
-4. DMGファイルを右クリック（またはControlキーを押しながらクリック）して「取り出す」を選択
+1. 上記リンクから.dmgインストーラーをダウンロード
+2. ダウンロードした.dmgファイルを開く
+3. Rclone Config AppをApplicationsフォルダにドラッグ
+4. インストーラーウィンドウを閉じる
+5. DMGファイルを右クリック（またはControlキーを押しながらクリック）して「取り出す」を選択
 
 ## 初回起動
 
-1. Finderを開き、アプリケーションフォルダに移動
+1. Finderを開き、Applicationsフォルダに移動
 2. "Rclone Config App"を右クリック（またはControlキーを押しながらクリック）して「開く」を選択
 3. セキュリティダイアログが表示された場合は「開く」をクリック
 4. アプリは自動的に`/usr/local/bin/rclone`のrcloneを検出します
-5. rcloneが検出されない場合は、セットアップダイアログで「デフォルトパスを使用」ボタンを使用してください
+5. rcloneが検出されない場合は、セットアップダイアログで「デフォルトパスを使用」ボタンを使用
 
-## インストールの確認
+## 確認事項
 
-- アプリのメインインターフェースに各クラウドプロバイダーのボタンが表示されます
-- クラウドプロバイダーのボタンをクリックして新しいリモートを追加できます
-- アプリはシステムにインストールされたrcloneを使用して操作を行います
+インストール後、以下を確認してください：
+- アプリがApplicationsフォルダに表示されている
+- セキュリティ警告なしで起動できる
+- rcloneが自動的に検出される
+- メインインターフェースにアクセスできる
 
 ## トラブルシューティング
 
+### 初回起動時のセキュリティ警告
+セキュリティ警告が表示された場合：
+1. アプリを右クリック（またはControlキーを押しながらクリック）
+2. コンテキストメニューから「開く」を選択
+3. ダイアログで「開く」をクリック
+
 ### rcloneが見つからない場合
-"rclone not found"エラーが表示される場合は、以下のコマンドでrcloneがインストールされているか確認してください：
-```bash
-which rclone
-```
+"rclone not found"エラーが表示される場合：
+1. rcloneがインストールされているか確認：
+   ```bash
+   which rclone
+   ```
+2. デフォルトの場所（`/usr/local/bin/rclone`）にあることを確認
+3. 別の場所にインストールされている場合は、アプリの設定で正しいパスを入力
 
-### カスタムrcloneの場所
-rcloneがデフォルトの場所以外にインストールされている場合は、セットアップダイアログで正しいパスを入力してください。
+### 権限の問題
+権限の問題が発生した場合：
+1. ユーザー権限を確認
+2. rcloneが正しくインストールされているか確認
+3. Applicationsフォルダへのアクセス権限を確認
 
-### アンインストール
-アプリケーションとそのデータを削除する場合：
+## アンインストール
 
-```bash
-# アプリの削除
-rm -rf "/Applications/Rclone Config App.app"
+アプリケーションを削除する場合：
 
-# アプリデータの削除（オプション）
-rm -rf ~/.config/rclone-config-app
-
-# rcloneの削除（オプション）
-brew uninstall rclone
-```
+1. アプリケーションを終了
+2. アプリを削除：
+   ```bash
+   rm -rf "/Applications/Rclone Config App.app"
+   ```
+3. 設定を削除（任意）：
+   ```bash
+   rm -rf ~/.config/rclone-config-app
+   ```
+4. rcloneが不要な場合は削除：
+   ```bash
+   brew uninstall rclone
+   ```
 
 ## サポート
 
 問題が発生した場合：
-1. `rclone version`を実行して、rcloneが正しくインストールされ動作していることを確認
-2. アプリの設定ディレクトリ`~/.config/rclone-config-app`を確認
-3. アプリケーションフォルダへの適切なアクセス権限があることを確認
+1. rcloneのインストールを確認：`rclone version`
+2. アプリの設定を確認：`~/.config/rclone-config-app`
+3. 適切な権限があることを確認
+4. 使用方法については[ユーザーガイド](users_guide_ja.md)を参照してください

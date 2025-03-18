@@ -5,9 +5,8 @@ const addGdriveButton = document.getElementById("add-gdrive");
 const addOnedriveButton = document.getElementById("add-onedrive");
 const addBoxButton = document.getElementById("add-box");
 const addDropboxButton = document.getElementById("add-dropbox");
-const testRemoteButton = document.getElementById("test-remote");
-const deleteRemoteButton = document.getElementById("delete-remote");
 const closeButton = document.getElementById("close");
+const reloadButton = document.getElementById("reload-remotes");
 
 // Other elements
 const remoteList = document.getElementById("remote-list");
@@ -23,6 +22,8 @@ const confirmRemoteButton = document.getElementById("confirm-remote");
 const cancelRemoteButton = document.getElementById("cancel-remote");
 const confirmRclonePathButton = document.getElementById("confirm-rclone-path");
 const cancelRclonePathButton = document.getElementById("cancel-rclone-path");
+
+let selectedRemote = null;
 
 // Handle rclone setup
 ipcRenderer.on('show-rclone-setup', async () => {
@@ -70,9 +71,6 @@ function hideRcloneSetupDialog() {
     overlay.classList.remove("show");
     rcloneSetupDialog.classList.remove("show");
 }
-
-let selectedRemote = null;
-let currentProvider = null;
 
 // Provider configuration handlers
 const providers = new Map([
@@ -141,38 +139,18 @@ confirmRemoteButton.addEventListener("click", () => {
 
 cancelRemoteButton.addEventListener("click", hideRemoteDialog);
 
-// Test remote connection
-testRemoteButton.addEventListener("click", () => {
-    if (!selectedRemote) {
-        configStatusElement.textContent = "Please select a remote to check";
-        return;
-    }
-    testRemoteButton.disabled = true;
-    configStatusElement.textContent = "Testing remote connection...";
-    remoteList.classList.add('loading');
-    const remoteStatusElement = document.getElementById('remote-status');
-    if (remoteStatusElement) {
-        remoteStatusElement.textContent = `Checking remote ${selectedRemote}...`;
-    }
-    ipcRenderer.send("check-remote", selectedRemote);
-});
-
 // Close application
-// Delete remote handler
-deleteRemoteButton.addEventListener("click", () => {
-    if (!selectedRemote) {
-        configStatusElement.textContent = "Please select a remote to delete";
-        return;
-    }
-    deleteRemoteButton.disabled = true;
-    configStatusElement.textContent = `Deleting remote ${selectedRemote}...`;
-    ipcRenderer.send("delete-remote", selectedRemote);
-});
-
 closeButton.addEventListener("click", () => {
     closeButton.disabled = true;
     configStatusElement.textContent = "Cleaning up and closing...";
     ipcRenderer.send("close-app");
+});
+
+// Reload button handler
+reloadButton.addEventListener("click", () => {
+    configStatusElement.textContent = "Reloading remotes list...";
+    reloadButton.disabled = true;
+    ipcRenderer.send("list-remotes");
 });
 
 // Handle delete status
@@ -180,12 +158,8 @@ ipcRenderer.on("delete-status", (event, { success, message }) => {
     configStatusElement.textContent = message;
     if (success) {
         selectedRemote = null;
-        testRemoteButton.disabled = true;
-        deleteRemoteButton.disabled = true;
         // Refresh the remotes list
         ipcRenderer.send("list-remotes");
-    } else {
-        deleteRemoteButton.disabled = false;
     }
 });
 
@@ -203,15 +177,13 @@ function handleRemoteClick(remoteName) {
     // Add selection to clicked remote
     const remoteElements = remoteList.querySelectorAll('.remote-item');
     for (const element of remoteElements) {
-        if (element.textContent === remoteName) {
+        if (element.querySelector('.remote-item-name').textContent === remoteName) {
             element.classList.add('selected');
             break;
         }
     }
 
     selectedRemote = remoteName;
-    testRemoteButton.disabled = false;
-    deleteRemoteButton.disabled = false;
     const remoteStatusElement = document.getElementById('remote-status');
     if (remoteStatusElement) {
         remoteStatusElement.textContent = `Selected remote: ${remoteName}`;
@@ -220,40 +192,100 @@ function handleRemoteClick(remoteName) {
 
 // Handle remotes list update
 ipcRenderer.on("remotes-list", (event, remotes) => {
-    // Update remote list display
-    let content = '';
+    // Create remotes list
+    const remotesList = document.createElement("div");
+    remotesList.className = "remote-items";
+    
     if (remotes.length > 0) {
-        content = `
-            <div class="remote-items">
-                ${remotes.map(remote => `<div class="remote-item">${remote}</div>`).join("")}
+        remotesList.innerHTML = remotes.map(remote => `
+            <div class="remote-item">
+                <span class="remote-item-name">${remote}</span>
+                <div class="remote-item-actions">
+                    <button class="action-icon check" title="Check Remote">
+                        <svg width="16" height="16" viewBox="0 0 16 16">
+                            <path fill="currentColor" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                        </svg>
+                    </button>
+                    <button class="action-icon delete" title="Delete Remote">
+                        <svg width="16" height="16" viewBox="0 0 16 16">
+                            <path fill="currentColor" d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                            <path fill="currentColor" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
-            <div id="remote-status" style="margin-top: 15px; font-family: monospace; white-space: pre-wrap;"></div>
-        `;
-        
-        remoteList.innerHTML = content;
-        
-        // Add click handlers to all remote items
-        const remoteItems = remoteList.querySelectorAll('.remote-item');
+        `).join("");
+
+        // Add status display
+        const statusDiv = document.createElement("div");
+        statusDiv.id = "remote-status";
+        statusDiv.style = "margin-top: 15px; font-family: monospace; white-space: pre-wrap;";
+
+        // Update remoteList content
+        remoteList.innerHTML = '';
+        remoteList.appendChild(remotesList);
+        remoteList.appendChild(statusDiv);
+
+        // Add click handlers
+        const remoteItems = remotesList.querySelectorAll('.remote-item');
         remoteItems.forEach(item => {
-            item.addEventListener('click', () => handleRemoteClick(item.textContent));
+            const remoteName = item.querySelector('.remote-item-name').textContent;
+            
+            // Name click handler
+            item.querySelector('.remote-item-name').addEventListener('click', () => {
+                handleRemoteClick(remoteName);
+            });
+
+            // Check button handler
+            item.querySelector('.action-icon.check').addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (selectedRemote === remoteName) {
+                    configStatusElement.textContent = "Testing remote connection...";
+                    remoteList.classList.add('loading');
+                    ipcRenderer.send("check-remote", remoteName);
+                }
+            });
+
+            // Delete button handler
+            item.querySelector('.action-icon.delete').addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (selectedRemote === remoteName) {
+                    configStatusElement.textContent = `Deleting remote ${remoteName}...`;
+                    ipcRenderer.send("delete-remote", remoteName);
+                }
+            });
         });
-        
-        // If previously selected remote still exists, reselect it
+
+        // Reselect previously selected remote
         if (selectedRemote && remotes.includes(selectedRemote)) {
             handleRemoteClick(selectedRemote);
         } else {
             selectedRemote = null;
-            testRemoteButton.disabled = true;
-            deleteRemoteButton.disabled = true;
         }
     } else {
-        remoteList.innerHTML = "No remotes configured";
+        remoteList.innerHTML = 'No remotes configured';
         selectedRemote = null;
-        testRemoteButton.disabled = true;
-        deleteRemoteButton.disabled = true;
     }
-    
+
+    // Update status
+    configStatusElement.textContent = remotes.length > 0 
+        ? `${remotes.length} remote(s) found` 
+        : "No remotes configured";
+
+    // Enable buttons
+    reloadButton.disabled = false;
     enableProviderButtons();
+});
+
+// Handle remote check status
+ipcRenderer.on("remote-status", (event, result) => {
+    remoteList.classList.remove('loading');
+    const remoteStatusElement = document.getElementById('remote-status');
+    if (remoteStatusElement) {
+        remoteStatusElement.textContent = result.summary + "\n\n" + result.recentFiles;
+    }
 });
 
 // Handle configuration status
@@ -282,16 +314,6 @@ ipcRenderer.on("config-status", (event, message) => {
     }
     
     configStatusElement.textContent = cleanMessage;
-});
-
-// Handle remote check status
-ipcRenderer.on("remote-status", (event, result) => {
-    testRemoteButton.disabled = false;
-    remoteList.classList.remove('loading');
-    const remoteStatusElement = document.getElementById('remote-status');
-    if (remoteStatusElement) {
-        remoteStatusElement.textContent = result.summary + "\n\n" + result.recentFiles;
-    }
 });
 
 function disableProviderButtons(disabled) {

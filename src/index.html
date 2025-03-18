@@ -106,6 +106,17 @@
         button.close-btn:hover {
             background-color: #c0392b;
         }
+        
+        /* Reload button */
+        button:not(.close-btn):disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        
+        button:not(.close-btn):not(:disabled):hover {
+            background-color: #2980b9;
+            transform: translateY(-1px);
+        }
         button.gdrive {
             background-color: #4285f4;
         }
@@ -182,21 +193,94 @@
             0% { transform: translate(-50%, -50%) rotate(0deg); }
             100% { transform: translate(-50%, -50%) rotate(360deg); }
         }
+        .remote-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .remote-list-header button {
+            padding: 5px 10px;
+            min-width: auto;
+        }
+        
         .remote-item {
             padding: 10px;
             border-bottom: 1px solid #eee;
-            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             transition: background-color 0.2s;
         }
+        
         .remote-item:last-child {
             border-bottom: none;
         }
+        
         .remote-item:hover {
             background-color: #e8f4fc;
         }
+        
         .remote-item.selected {
             background-color: #d1ecf1;
             border-left: 4px solid #3498db;
+        }
+        
+        .remote-item-name {
+            flex-grow: 1;
+            cursor: pointer;
+        }
+        
+        .remote-item-actions {
+            display: flex;
+            gap: 5px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .remote-item:hover .remote-item-actions {
+            opacity: 1;
+        }
+        
+        .action-icon {
+            background: none;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            color: #666;
+            min-width: auto;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+        .action-icon svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .action-icon:hover {
+            background-color: #f0f0f0;
+        }
+
+        .action-icon.check:hover {
+            color: #3498db;
+        }
+        
+        .action-icon.delete:hover {
+            color: #e74c3c;
+        }
+
+        .remote-item:not(.selected) .action-icon {
+            visibility: hidden;
+        }
+
+        .remote-item.selected .action-icon {
+            visibility: visible;
         }
         .dialog {
             display: none;
@@ -241,11 +325,8 @@
         <div class="section">
             <div style="display: flex; flex-direction: column; gap: 15px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3 style="margin: 0;">Existing Remotes</h3>
-                    <div class="action-buttons" style="margin: 0; gap: 10px;">
-                        <button id="test-remote" disabled>Check Remote</button>
-                        <button id="delete-remote" class="close-btn" disabled>Delete Remote</button>
-                    </div>
+                    <h3 style="margin: 0;">Connected Remotes</h3>
+                    <button id="reload-remotes" style="margin-left: 10px;">Reload Remotes</button>
                 </div>
                 <div id="remote-list" class="remote-list">
                     Loading remotes...
