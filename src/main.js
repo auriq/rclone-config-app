@@ -269,7 +269,7 @@ function createWindow() {
         }
     });
 
-    mainWindow.loadFile("index.html");
+    mainWindow.loadFile(path.join(__dirname, "index.html"));
     
     // List remotes after window loads
     mainWindow.webContents.on('did-finish-load', async () => {
